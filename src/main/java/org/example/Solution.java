@@ -2,51 +2,31 @@ package org.example;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 public class Solution {
-	
+
+	private static String cnfFilePath = "src/main/resources/CNF.txt";
+
 	public static void solveCNF() {
 		System.out.println("\nResolution : \n");
-		File file =  new File("src/main/CNF.txt");
-		Scanner scan = null;
-		int numberOfQueries, numStatements;
+		File file =  new File(cnfFilePath);
+
+		int queriesCount, statementsCount;
 		String[] queries = null, statements = null;
-		try {
-			scan =  new Scanner(file);
+		try(Scanner scan =  new Scanner(file)) {
+
 			String string =  scan.nextLine();
-			numberOfQueries = Integer.parseInt(string);
-			queries = new String[numberOfQueries];
-			for ( int i = 0; i < numberOfQueries; i++){
-				StringBuilder builder = new StringBuilder(scan.nextLine());
-				for (int j = 0 ; j < builder.length(); j++){
-					if (builder.charAt(j) == ' ' || builder.charAt(j) == '\t' || builder.charAt(j) == '\n'){
-						builder.replace(j, j+1, "");
-						j--;
-					}
-				}
-				queries[i] = builder.toString();
-			}
-			
-			numStatements = Integer.parseInt(scan.nextLine());
-			statements = new String[numStatements];
-			for (int i = 0; i < numStatements; i++){
-				StringBuilder builder = new StringBuilder(scan.nextLine());
-				for (int j = 0 ; j < builder.length(); j++){
-					if (builder.charAt(j) == ' ' || builder.charAt(j) == '\t' || builder.charAt(j) == '\n'){
-						builder.replace(j, j+1, "");
-						j--;
-					}
-				}
-				statements[i] = builder.toString();
-			}
-			
+			queriesCount = Integer.parseInt(string);
+			queries = new String[queriesCount];
+			removeSpaces(scan, queriesCount, queries);
+
+			statementsCount = Integer.parseInt(scan.nextLine());
+			statements = new String[statementsCount];
+			removeSpaces(scan, statementsCount, statements);
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}finally{
-			scan.close();
 		}
 		
 		
@@ -57,44 +37,33 @@ public class Solution {
 		
 		for ( int i = 0; i < queries.length; i++){
 			HashMap<String,List<String>> predicateMap =  cnfConverter.getPredicateMap();
-			HashMap<String,List<String>> predicateMapClone = new HashMap<String,List<String>>();
-			Set<String> keys = predicateMap.keySet();
-			for ( String key : keys){
-				List<String> list = predicateMap.get(key);
-				List<String> listClone =  new ArrayList<String>();
-				for (String item : list){
-					listClone.add(item);
-				}
-				predicateMapClone.put(key, listClone);
-			}
-			
+
 			Set<String> classMap = cnfConverter.getClassMap();
-			HashSet<String> classMapClone = new HashSet<String>();
-			for (String item: classMap){
-				classMapClone.add(item);
-			}
 			
-			Resolver resolver =  new Resolver( classMapClone, predicateMapClone);
+			Resolver resolver =  new Resolver( classMap, predicateMap);
 			result[i] = resolver.resolution(queries[i]);
 		}
-		File outFile = new File("output.txt");
-		try {
-			FileWriter fileWriter = new FileWriter(outFile);
-			
-			for ( int i = 0; i < result.length; i++){
-				if (result[i]){
-					fileWriter.write("TRUE\n");
-					System.out.println("TRUE");
-				} else {
-					fileWriter.write("FALSE\n");
-					System.out.println("FALSE");
-				}
+
+		for ( int i = 0; i < result.length; i++){
+			if (result[i]){
+				System.out.println("Goal is true");
+			} else {
+				System.out.println("Goal is false");
 			}
-			fileWriter.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
+	}
+
+	private static void removeSpaces(Scanner scan, int queriesCount, String[] queries) {
+		for ( int i = 0; i < queriesCount; i++){
+			StringBuilder builder = new StringBuilder(scan.nextLine());
+			for (int j = 0 ; j < builder.length(); j++){
+				if (builder.charAt(j) == ' ' || builder.charAt(j) == '\t' || builder.charAt(j) == '\n'){
+					builder.replace(j, j+1, "");
+					j--;
+				}
+			}
+			queries[i] = builder.toString();
+		}
 	}
 }

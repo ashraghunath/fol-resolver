@@ -20,13 +20,6 @@ public class Resolver {
 		classMap.add(negatedQuery);
 		classList.add(0, negatedQuery);
 		
-
-		/*System.out.println("KB");
-		for (String clause : classList){
-			System.out.println(clause);
-		}
-		System.out.println();*/
-		
 		
 		int sizeDiff = -1;
 		while(sizeDiff != 0 ){
@@ -35,7 +28,7 @@ public class Resolver {
 				if (classList.size() > 50000){
 					return false;
 				}
-				//System.out.println(classList.size());
+
 				String clause = classList.get(i);
 				if(unify(clause)){
 					return true;
@@ -44,17 +37,6 @@ public class Resolver {
 			sizeDiff = classMap.size() - size;
 			
 		}
-		
-		
-		
-		/*Set<String> keys = predicateMap.keySet();
-		
-		for (String key : keys){
-			System.out.println("Key : " + key);
-			for (String clause : predicateMap.get(key)){
-				System.out.println(clause);
-			}
-		}*/
 		
 		return false;
 	}
@@ -281,12 +263,8 @@ public class Resolver {
 						if (newString.isEmpty() || newString.equals("")){
 							continue;
 						}
-
 						
 						if(classMap.add(newString)){
-							/*System.out.println(aClause+" "+bclause);
-							System.out.println("ADDDING NEW CLAUSE: "+newString);
-							System.out.println();*/
 							
 							String[] tokens = newString.split("\\|");
 							

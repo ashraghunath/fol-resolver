@@ -26,7 +26,7 @@ public class App
     static int folQueriesCount, folStatementsCount;
     static String[] folInputqueries = null, folInputstatements = null;
 
-    static String filepath ="src/main/FOL1.txt";
+    static String filepath ="src/main/resources/FOL1.txt";
     public static void main( String[] args )
     {
         //Read FOL input
@@ -68,7 +68,7 @@ public class App
         List<String> cnf = convertToOutputClause(kb.getOriginalSentences(), cnfConverter);
 
 
-        outputCNF("src/main/CNF.txt",cnfQueries,cnf);
+        outputCNF("src/main/resources/CNF.txt",cnfQueries,cnf);
 
         Solution.solveCNF();
     }
