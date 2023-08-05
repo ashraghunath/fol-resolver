@@ -6,11 +6,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class homework3 {
+public class Solution {
 	
-	public static void main(String[] args) {
-		System.out.println("FOL LOGIC");
-		File file =  new File("Homework 3/input.txt");
+	public static void solveCNF() {
+		System.out.println("\nResolution : \n");
+		File file =  new File("src/main/CNF.txt");
 		Scanner scan = null;
 		int numberOfQueries, numStatements;
 		String[] queries = null, statements = null;
@@ -73,7 +73,6 @@ public class homework3 {
 			for (String item: classMap){
 				classMapClone.add(item);
 			}
-			
 			
 			Resolver resolver =  new Resolver( classMapClone, predicateMapClone);
 			result[i] = resolver.resolution(queries[i]);

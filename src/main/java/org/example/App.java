@@ -10,6 +10,7 @@ import aima.core.logic.fol.kb.data.Literal;
 import aima.core.logic.fol.parsing.FOLParser;
 import aima.core.logic.fol.parsing.ast.Sentence;
 
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,18 +18,19 @@ import java.util.regex.Pattern;
 public class App
 {
     public static Set<String> predefined = new HashSet<String>(Arrays.asList("AND", "OR", "EXISTS", "FORALL", "NOT"));
-    public static Set<String> sentences = new HashSet<String>(Arrays.asList(
-            "(EXISTS x (Dog(x) AND Owns(JACK,x)))",
-            "(FORALL x (EXISTS y (Dog(y) AND Owns(x,y)) => AnimalLover(x) ) ))",
-            "(FORALL x (AnimalLover(x) => (FORALL y (Animal(y) => NOT Kills(x,y)))))",
-            "(Kills(JACK,TUNA) OR Kills(CURIOSITY,TUNA))",
-            "(Cat(TUNA))",
-            "(FORALL x (Cat(x) => Animal(x)))",
-            "(Kills(CURIOSITY,TUNA))"
-    ));
+    public static Set<String> sentences = new HashSet<>();
     public static Set<String> folSentences = new HashSet<String>();
+
+    static int folQueriesCount, folStatementsCount;
+    static String[] folInputqueries = null, folInputstatements = null;
+
+    static String filepath ="src/main/FOL.txt";
     public static void main( String[] args )
     {
+        //Read FOL input
+        readFOL(filepath);
+
+        //Parse fol to accurate cnf
         Set<String> predicates = extractPredicates();
         Set<String> variables = extractVariables();
         Set<String> constants = extractConstants();
@@ -51,7 +53,6 @@ public class App
             kb.tell(s);
         }
 
-
         FOLParser folParser = new FOLParser(domain);
         CNFConverter cnfConverter = new CNFConverter(folParser);
 
@@ -69,20 +70,72 @@ public class App
                 String clauseBeforeTrim = sb.toString();
                 clausesBefore.add(clauseBeforeTrim.substring(0,clauseBeforeTrim.length()-3));
             }
-
-            System.out.println(cnf);
+//
+//            System.out.println(cnf);
         }
 
-        System.out.println("******");
+        System.out.println("CNF : \n");
 
         for (String s : clausesBefore) {
             System.out.println(s);
         }
 
-        //Next part
+        outputCNF("src/main/CNF.txt",clausesBefore);
+
+        Solution.solveCNF();
+    }
+
+    private static void outputCNF(String filepath, List<String> clauses) {
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filepath))) {
+
+//            //TODO convert query and add
+            writer.write(""+folInputqueries.length);
+            writer.newLine();
+            for (String folInputquery : folInputqueries) {
+                writer.write(folInputquery);
+                writer.newLine();
+            }
+
+            writer.write(""+clauses.size());
+            writer.newLine();
+            for (String line : clauses) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
 
     }
 
+    public static void readFOL(String filepath)
+    {
+        Scanner scan = null;
+        try {
+            File file =  new File(filepath);
+            scan =  new Scanner(file);
+            String string =  scan.nextLine();
+            folQueriesCount = Integer.parseInt(string);
+            folInputqueries = new String[folQueriesCount];
+            for ( int i = 0; i < folQueriesCount; i++){
+                folInputqueries[i] = scan.nextLine();
+            }
+
+            folStatementsCount = Integer.parseInt(scan.nextLine());
+            folInputstatements = new String[folStatementsCount];
+            for (int i = 0; i < folStatementsCount; i++){
+                folInputstatements[i] = scan.nextLine();
+            }
+
+            sentences.addAll(Arrays.asList(folInputstatements));
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally{
+            scan.close();
+        }
+    }
     public static void removeCapitals(Set<String> constants) {
         String temp, s;
         for (String sentence : sentences) {

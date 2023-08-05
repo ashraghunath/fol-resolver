@@ -1,7 +1,9 @@
-(EXISTS x (Dog(x) AND Owns(Jack,x)))
-(FORALL x (EXISTS y (Dog(y) AND Owns(x,y) => AnimalLover(x) ) ))
+1
+Kills(Curiosity,Tuna)
+6
+(EXISTS x (Dog(x) AND Owns(JACK,x)))
+(FORALL x (EXISTS y (Dog(y) AND Owns(x,y)) => AnimalLover(x) ) ))
 (FORALL x (AnimalLover(x) => (FORALL y (Animal(y) => NOT Kills(x,y)))))
-(Kills(Jack,Tuna) OR Kills(Curiosity,Tuna))
-(Cat(Tuna))
-(FORALL x(Cat(x) => Animal(x)))
-(Kills(Curiosity,Tuna))
+(Kills(JACK,TUNA) OR Kills(CURIOSITY,TUNA))
+(Cat(TUNA))
+(FORALL x (Cat(x) => Animal(x)))

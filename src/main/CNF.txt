@@ -1,0 +1,10 @@
+1
+Kills(Curiosity,Tuna)
+7
+Cat(Tuna)
+~Dog(y) | ~Owns(x,y) | AnimalLover(x)
+Kills(Jack,Tuna) | Kills(Curiosity,Tuna)
+Dog(SC0)
+Owns(Jack,SC0)
+~Cat(x) | Animal(x)
+~AnimalLover(x) | ~Animal(y) | ~Kills(x,y)
