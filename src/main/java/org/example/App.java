@@ -198,6 +198,16 @@ public class App
                     predicates.add(temp);
             }
         }
+        for (String s: querySentences) {
+            Matcher matcher = pattern.matcher(s);
+            String temp;
+
+            while (matcher.find()) {
+                temp = matcher.group();
+                if (!App.predefined.contains(temp))
+                    predicates.add(temp);
+            }
+        }
         return predicates;
     }
 
@@ -220,6 +230,15 @@ public class App
         Set<String> constants = new HashSet<String>();
         Pattern pattern = Pattern.compile("\\b[A-Z0-9]*\\b");
         for (String s: sentences) {
+            Matcher matcher = pattern.matcher(s);
+
+            while (matcher.find()) {
+                String match = matcher.group();
+                if (!App.predefined.contains(match) && match.length()!=0)
+                    constants.add(match);
+            }
+        }
+        for (String s: querySentences) {
             Matcher matcher = pattern.matcher(s);
 
             while (matcher.find()) {

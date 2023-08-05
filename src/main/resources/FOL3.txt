@@ -1,0 +1,10 @@
+1
+(Likes(JOHN,PEANUTS))
+7
+(FORALL x (Food(x) => Likes(JOHN)))
+(Food(APPLE) AND Food(VEGETABLES))
+(FORALL x (FORALL y (Eats(x,y) AND NOT Killed(x) => Food(y))))
+(Eats(ANIL) AND Alive(ANIL))
+(FORALL x (Eats(ANIL,x) => Eats(HARRY,x)))
+(FORALL x (NOT Killed(x) => Alive(x)))
+(FORALL x (Alive(x) => NOT Killed(x)))

@@ -1,9 +1,0 @@
-1
-(Child(JOHN) => (EXISTS x (Pumpkin(x) AND Carve(JOHN,x))))
-6
-(FORALL x FORALL y (Child(x) AND Candy(y) => Loves(x,y)))
-(FORALL x ( (EXISTS y (Candy(y) AND Loves(x,y))) => NOT Fanatic(x)))
-(FORALL x ((EXISTS y (Pumpkin(y) AND Eat(x,y))) => Fanatic(x)))
-(FORALL x FORALL y (Pumpkin(y) AND Buy(x,y) => Carve(x,y) OR Eat(x,y)))
-(EXISTS x (Pumpkin(x) AND Buy(JOHN,x)))
-(Candy(LIFESAVERS))

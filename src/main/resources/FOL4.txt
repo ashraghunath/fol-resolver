@@ -1,0 +1,6 @@
+1
+(NOT Eats(MANI,FISH))
+3
+(FORALL x (Cat(x) => Likes(x,FISH)))
+(FORALL x (FORALL y ((Cat(x) AND Likes(x,y)) => Eats(x,y))))
+Cat(MANI)

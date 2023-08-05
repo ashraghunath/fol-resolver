@@ -1,10 +1,11 @@
-1
-Kills(Curiosity,Tuna)
+2
+~Child(John) | Pumpkin(SC0)
+~Child(John) | Carve(John,SC0)
 7
-Cat(Tuna)
-~Dog(y) | ~Owns(x,y) | AnimalLover(x)
-Kills(Jack,Tuna) | Kills(Curiosity,Tuna)
-Dog(SC0)
-Owns(Jack,SC0)
-~Cat(x) | Animal(x)
-~AnimalLover(x) | ~Animal(y) | ~Kills(x,y)
+Pumpkin(SC1)
+Buy(John,SC1)
+~Child(x) | ~Candy(y) | Loves(x,y)
+~Pumpkin(y) | ~Eat(x,y) | Fanatic(x)
+Candy(Lifesavers)
+~Pumpkin(y) | ~Buy(x,y) | Carve(x,y) | Eat(x,y)
+~Candy(y) | ~Loves(x,y) | ~Fanatic(x)

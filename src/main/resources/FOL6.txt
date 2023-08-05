@@ -1,0 +1,10 @@
+1
+(Criminal(WEST))
+7
+(FORALL x (FORALL y (FORALL z ((American(x) AND Weapon(y) AND Sells(x,y,z) AND Hostile(z)) => Criminal (x)))))
+(FORALL x ((Missile(x) AND Owns(NONO,x)) => Sells(WEST,x,NONO)))
+(FORALL x (Enemy(x,AMERICA) => Hostile(x)))
+(FORALL x (Missile(x) => Weapon(x)))
+(EXISTS x (Owns(NONO,x) AND Missile(x)))
+American(WEST)
+Enemy(NONO,AMERICA)

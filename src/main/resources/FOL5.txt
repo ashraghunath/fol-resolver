@@ -1,0 +1,5 @@
+1
+Bird(TWEETY)
+2
+(FORALL x (Feathers(x) => Bird(x)))
+(Feathers(TWEETY))

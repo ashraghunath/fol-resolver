@@ -1,5 +1,5 @@
 1
-Kills(CURIOSITY,TUNA)
+(NOT Kills(CURIOSITY,TUNA))
 6
 (EXISTS x (Dog(x) AND Owns(JACK,x)))
 (FORALL x (EXISTS y (Dog(y) AND Owns(x,y)) => AnimalLover(x) ) ))
