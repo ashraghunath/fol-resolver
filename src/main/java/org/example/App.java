@@ -5,6 +5,8 @@ import aima.core.logic.fol.CNFConverter;
 import aima.core.logic.fol.domain.FOLDomain;
 import aima.core.logic.fol.kb.FOLKnowledgeBase;
 import aima.core.logic.fol.kb.data.CNF;
+import aima.core.logic.fol.kb.data.Clause;
+import aima.core.logic.fol.kb.data.Literal;
 import aima.core.logic.fol.parsing.FOLParser;
 import aima.core.logic.fol.parsing.ast.Sentence;
 
@@ -17,7 +19,7 @@ public class App
     public static Set<String> predefined = new HashSet<String>(Arrays.asList("AND", "OR", "EXISTS", "FORALL", "NOT"));
     public static Set<String> sentences = new HashSet<String>(Arrays.asList(
             "(EXISTS x (Dog(x) AND Owns(JACK,x)))",
-            "(FORALL x (EXISTS y (Dog(y) AND Owns(x,y) => AnimalLover(x))))",
+            "(FORALL x (EXISTS y (Dog(y) AND Owns(x,y)) => AnimalLover(x) ) ))",
             "(FORALL x (AnimalLover(x) => (FORALL y (Animal(y) => NOT Kills(x,y)))))",
             "(Kills(JACK,TUNA) OR Kills(CURIOSITY,TUNA))",
             "(Cat(TUNA))",
@@ -33,14 +35,7 @@ public class App
         String temp;
         predicates.removeAll(constants);
 
-        System.out.println("Predicates: " + predicates);
-        System.out.println("Variables: " + variables);
-        System.out.println("Constants: " + constants);
-
         removeCapitals(constants);
-        for (String s: folSentences) {
-            // System.out.println(s);
-        }
 
         FOLDomain domain = new FOLDomain();
         for(String c: constants) {
@@ -49,17 +44,6 @@ public class App
         for(String p: predicates) {
             domain.addPredicate(p);
         }
-//        domain.addConstant("D");
-//        domain.addConstant("Jack");
-//        domain.addConstant("Curiosity");
-//        domain.addConstant("Tuna");
-//        domain.addPredicate("Cat");
-//        domain.addPredicate("Animal");
-//        domain.addPredicate("Subset");
-//        domain.addPredicate("Dog");
-//        domain.addPredicate("AnimalLover");
-//        domain.addPredicate("Kills");
-//        domain.addPredicate("Owns");
 
         FOLKnowledgeBase kb = new FOLKnowledgeBase(domain);
 
@@ -67,24 +51,36 @@ public class App
             kb.tell(s);
         }
 
-//        kb.tell("(EXISTS x (Dog(x) AND Owns(Jack,x)))");
-//        kb.tell("(FORALL x (EXISTS y (Dog(y) AND Owns(x,y) => AnimalLover(x) ) ))");
-//        kb.tell("(FORALL x (AnimalLover(x) => (FORALL y (Animal(y) => NOT Kills(x,y)))))");
-//
-//        kb.tell("(Kills(Jack,Tuna) OR Kills(Curiosity,Tuna))");
-//        kb.tell("(Cat(Tuna))");
-//        kb.tell("(FORALL x(Cat(x) => Animal(x)))");
-//        kb.tell("(Kills(Curiosity,Tuna))");
 
         FOLParser folParser = new FOLParser(domain);
         CNFConverter cnfConverter = new CNFConverter(folParser);
 
-        List<Sentence> originalSentences = kb.getOriginalSentences();
-
+        List<String> clausesBefore = new ArrayList<>();
         for (Sentence originalSentence : kb.getOriginalSentences()) {
             CNF cnf = cnfConverter.convertToCNF(originalSentence);
+
+            for (Clause conjunctionOfClause : cnf.getConjunctionOfClauses()) {
+
+                StringBuilder sb = new StringBuilder();
+
+                for (Literal literal : conjunctionOfClause.getLiterals()) {
+                    sb.append(literal).append(" | ");
+                }
+                String clauseBeforeTrim = sb.toString();
+                clausesBefore.add(clauseBeforeTrim.substring(0,clauseBeforeTrim.length()-3));
+            }
+
             System.out.println(cnf);
         }
+
+        System.out.println("******");
+
+        for (String s : clausesBefore) {
+            System.out.println(s);
+        }
+
+        //Next part
+
     }
 
     public static void removeCapitals(Set<String> constants) {
