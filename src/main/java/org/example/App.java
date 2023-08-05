@@ -29,6 +29,9 @@ public class App
     static String filepath ="src/main/resources/FOL1.txt";
     public static void main( String[] args )
     {
+
+        long startTime = System.currentTimeMillis();
+
         //Read FOL input
         readFOL(filepath);
 
@@ -71,6 +74,12 @@ public class App
         outputCNF("src/main/resources/CNF.txt",cnfQueries,cnf);
 
         Solution.solveCNF();
+
+
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+
+        System.out.println("\nExecution time: " + executionTime + " milliseconds");
     }
 
     public static List<String> convertToOutputClause(List<Sentence> originalSentences, CNFConverter cnfConverter)
