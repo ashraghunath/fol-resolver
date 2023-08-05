@@ -19,12 +19,14 @@ public class App
 {
     public static Set<String> predefined = new HashSet<String>(Arrays.asList("AND", "OR", "EXISTS", "FORALL", "NOT"));
     public static Set<String> sentences = new HashSet<>();
+    public static Set<String> querySentences = new HashSet<>();
     public static Set<String> folSentences = new HashSet<String>();
+    public static Set<String> folQuerySentences = new HashSet<String>();
 
     static int folQueriesCount, folStatementsCount;
     static String[] folInputqueries = null, folInputstatements = null;
 
-    static String filepath ="src/main/FOL.txt";
+    static String filepath ="src/main/FOL1.txt";
     public static void main( String[] args )
     {
         //Read FOL input
@@ -48,16 +50,33 @@ public class App
         }
 
         FOLKnowledgeBase kb = new FOLKnowledgeBase(domain);
+        FOLParser folParser = new FOLParser(domain);
+        CNFConverter cnfConverter = new CNFConverter(folParser);
+
+
+        for (String folInputquery : folQuerySentences) {
+            kb.tell(folInputquery);
+        }
+
+        List<String> cnfQueries = convertToOutputClause(kb.getOriginalSentences(), cnfConverter);
+        kb.clear();
 
         for (String s: folSentences) {
             kb.tell(s);
         }
 
-        FOLParser folParser = new FOLParser(domain);
-        CNFConverter cnfConverter = new CNFConverter(folParser);
+        List<String> cnf = convertToOutputClause(kb.getOriginalSentences(), cnfConverter);
 
+
+        outputCNF("src/main/CNF.txt",cnfQueries,cnf);
+
+        Solution.solveCNF();
+    }
+
+    public static List<String> convertToOutputClause(List<Sentence> originalSentences, CNFConverter cnfConverter)
+    {
         List<String> clausesBefore = new ArrayList<>();
-        for (Sentence originalSentence : kb.getOriginalSentences()) {
+        for (Sentence originalSentence : originalSentences) {
             CNF cnf = cnfConverter.convertToCNF(originalSentence);
 
             for (Clause conjunctionOfClause : cnf.getConjunctionOfClauses()) {
@@ -70,38 +89,32 @@ public class App
                 String clauseBeforeTrim = sb.toString();
                 clausesBefore.add(clauseBeforeTrim.substring(0,clauseBeforeTrim.length()-3));
             }
-//
-//            System.out.println(cnf);
         }
 
-        System.out.println("CNF : \n");
-
-        for (String s : clausesBefore) {
-            System.out.println(s);
-        }
-
-        outputCNF("src/main/CNF.txt",clausesBefore);
-
-        Solution.solveCNF();
+        return clausesBefore;
     }
 
-    private static void outputCNF(String filepath, List<String> clauses) {
+    private static void outputCNF(String filepath, List<String> cnfQueries, List<String> cnf) {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filepath))) {
 
 //            //TODO convert query and add
-            writer.write(""+folInputqueries.length);
+            writer.write(""+cnfQueries.size());
             writer.newLine();
-            for (String folInputquery : folInputqueries) {
+            System.out.println(cnfQueries.size());
+            for (String folInputquery : cnfQueries) {
                 writer.write(folInputquery);
                 writer.newLine();
+                System.out.println(folInputquery);
             }
 
-            writer.write(""+clauses.size());
+            writer.write(""+cnf.size());
+            System.out.println(cnf.size());
             writer.newLine();
-            for (String line : clauses) {
+            for (String line : cnf) {
                 writer.write(line);
                 writer.newLine();
+                System.out.println(line);
             }
         } catch (IOException e) {
             System.err.println("Error writing to file: " + e.getMessage());
@@ -121,6 +134,8 @@ public class App
             for ( int i = 0; i < folQueriesCount; i++){
                 folInputqueries[i] = scan.nextLine();
             }
+
+            querySentences.addAll(Arrays.asList(folInputqueries));
 
             folStatementsCount = Integer.parseInt(scan.nextLine());
             folInputstatements = new String[folStatementsCount];
@@ -147,6 +162,17 @@ public class App
                 }
             }
             folSentences.add(s);
+        }
+
+        for (String sentence : querySentences) {
+            s = sentence;
+            for (String c : constants) {
+                if (s.contains(c)) {
+                    String temp1 = c.charAt(0) + (c.toLowerCase().substring(1));
+                    s = s.replaceAll(c, temp1);
+                }
+            }
+            folQuerySentences.add(s);
         }
     }
     // Extracts predicates from the sentence
