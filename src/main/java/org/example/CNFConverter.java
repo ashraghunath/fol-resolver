@@ -3,9 +3,9 @@ package org.example;
 import java.util.*;
 
 public class CNFConverter {
-	private List<HashMap<String,String>> mapList = new ArrayList<HashMap<String,String>>();
-	private Set<String> classMap = new HashSet<String>();
-	private HashMap<String,List<String>> predicateMap = new HashMap<String,List<String>>();
+	private static List<HashMap<String,String>> mapList = new ArrayList<HashMap<String,String>>();
+	private static Set<String> classMap = new HashSet<String>();
+	private static HashMap<String,List<String>> predicateMap = new HashMap<String,List<String>>();
 	
 
 	public Set<String> getClassMap() {
@@ -34,13 +34,13 @@ public class CNFConverter {
 			statements[i] = eliminateBraces(statements[i]);
 			statements[i] = eliminateDuplicates(statements[i]);
 			//System.out.println(statements[i]);
-			findClasses(statements[i],i);
+			findAllClassesList(statements[i],i);
 		}
 		//System.out.println();
 		Set<String> clauseMap = new HashSet<String>();
 		int  i = 0;
 		for ( String clause : classMap){
-			clause = standardizeVariables(clause, i);
+			clause = variableStandardization(clause, i);
 			clauseMap.add(clause);
 			i++;
 		}
@@ -57,37 +57,37 @@ public class CNFConverter {
 
 	
 	private String eliminateDuplicates(String string) {
-		String[] tokens = string.split("\\|");
+		String[] tokensList = string.split("\\|");
 		Set<String> tokenSet = new HashSet<String>();
-		String token = "";
-		for ( int i = 0; i < tokens.length; i++ ){
-			if (tokenSet.add(tokens[i])){
-				token  = token + tokens[i]+"|";
+		String tokenString = "";
+		for ( int i = 0; i < tokensList.length; i++ ){
+			if (tokenSet.add(tokensList[i])){
+				tokenString  = tokenString + tokensList[i]+"|";
 			}
 		}
-		token = token.substring(0, token.length()-1);
-		return token;
+		tokenString = tokenString.substring(0, tokenString.length()-1);
+		return tokenString;
 	}
 
 	private void fillKB(String clause) {
-		String[] predicates = clause.split("\\|");
+		String[] predicatesList = clause.split("\\|");
 		
-		for ( int i =0 ; i < predicates.length; i++){
-			predicates[i] = getPredicate(predicates[i]);
+		for (int i = 0; i < predicatesList.length; i++){
+			predicatesList[i] = getPredicate(predicatesList[i]);
 		}
 		
-		for ( int  j = 0; j < predicates.length; j++){
-			while(predicates[j].charAt(predicates[j].length()-1) == '@'){
-				predicates[j] = predicates[j].substring(0, predicates[j].length()-1);
+		for (int j = 0; j < predicatesList.length; j++){
+			while(predicatesList[j].charAt(predicatesList[j].length()-1) == '%'){
+				predicatesList[j] = predicatesList[j].substring(0, predicatesList[j].length()-1);
 			}
 		}
-		for ( int j =0 ; j < predicates.length; j++){
-			if (predicateMap.get(predicates[j]) != null){
-				predicateMap.get(predicates[j]).add(clause);
+		for (int j = 0; j < predicatesList.length; j++){
+			if (predicateMap.get(predicatesList[j]) != null){
+				predicateMap.get(predicatesList[j]).add(clause);
 			} else {
 				List<String> tokens = new ArrayList<String>();
 				tokens.add(clause);
-				predicateMap.put(predicates[j], tokens);
+				predicateMap.put(predicatesList[j], tokens);
 			}
 		}
 		
@@ -114,7 +114,7 @@ public class CNFConverter {
 	}
 	
 
-	private void findClasses(String string, int statementNumber) {
+	private void findAllClassesList(String string, int statementNumber) {
 		HashMap<String,String> map = mapList.get(statementNumber);
 		if (string.charAt(0) == '('){
 			//int open = 1;
@@ -123,81 +123,81 @@ public class CNFConverter {
 				if (string.charAt(i) == ')'){
 					//open--;
 					if (i == string.length()-1){
-						String token = string.substring(start, i);
+						String tokenString = string.substring(start, i);
 
-						String[] predicates = token.split("\\|");
-						token = "";
+						String[] predicates = tokenString.split("\\|");
+						tokenString = "";
 						for ( int j = 0; j < predicates.length; j++){
-							String predicate = predicates[j].trim();
-							if (predicate.charAt(0) == '('){
-								predicate = predicate.substring(1);
+							String predicateString = predicates[j].trim();
+							if (predicateString.charAt(0) == '('){
+								predicateString = predicateString.substring(1);
 							}
-							if (predicate.charAt(predicate.length()-1) == ')'){
-								predicate = predicate.substring(0, predicate.length()-1);
+							if (predicateString.charAt(predicateString.length()-1) == ')'){
+								predicateString = predicateString.substring(0, predicateString.length()-1);
 							}
-							predicate = map.get(predicate);
+							predicateString = map.get(predicateString);
 							
-							token = token+predicate;
+							tokenString = tokenString + predicateString;
 							if (j != predicates.length-1){
-								token =  token+"|";
+								tokenString =  tokenString + "|";
 							}
 						}
-						classMap.add(token);
+						classMap.add(tokenString);
 					}
 				}
 				
 				if (string.charAt(i) == '&'){
-					String token = string.substring(start, i);
+					String tokenString = string.substring(start, i);
 					
 					start = i+1;
-					String[] predicates = token.split("\\|");
-					token = "";
+					String[] predicates = tokenString.split("\\|");
+					tokenString = "";
 					for ( int j = 0; j < predicates.length; j++){
-						String predicate = predicates[j].trim();
-						if (predicate.charAt(0) == '('){
-							predicate = predicate.substring(1);
+						String predicateString = predicates[j].trim();
+						if (predicateString.charAt(0) == '('){
+							predicateString = predicateString.substring(1);
 						}
-						if (predicate.charAt(predicate.length()-1) == ')'){
-							predicate = predicate.substring(0, predicate.length()-1);
+						if (predicateString.charAt(predicateString.length()-1) == ')'){
+							predicateString = predicateString.substring(0, predicateString.length()-1);
 						}
 						
-						predicate = map.get(predicate);
+						predicateString = map.get(predicateString);
 						
-						token = token+predicate;
+						tokenString = tokenString+predicateString;
 						if (j != predicates.length-1){
-							token =  token+"|";
+							tokenString =  tokenString + "|";
 						}
 					}
 
-					classMap.add(token);
+					classMap.add(tokenString);
 				}
 				
 			}
 		} else {
-			String[] classes = string.split("&");
-			for ( int i = 0; i < classes.length; i++){
-				String token = classes[i];
+			String[] classesList = string.split("&");
+			for ( int i = 0; i < classesList.length; i++){
+				String tokenString = classesList[i];
 
-				String[] predicates = token.split("\\|");
-				token = "";
+				String[] predicates = tokenString.split("\\|");
+				tokenString = "";
 				for ( int j = 0; j < predicates.length; j++){
-					String predicate = predicates[j].trim();
-					if (predicate.charAt(0) == '('){
-						predicate = predicate.substring(1);
+					String predicateString = predicates[j].trim();
+					if (predicateString.charAt(0) == '('){
+						predicateString = predicateString.substring(1);
 					}
-					if (predicate.charAt(predicate.length()-1) == ')'){
-						predicate = predicate.substring(0, predicate.length()-1);
+					if (predicateString.charAt(predicateString.length()-1) == ')'){
+						predicateString = predicateString.substring(0, predicateString.length()-1);
 					}
 					
-					predicate = map.get(predicate);
+					predicateString = map.get(predicateString);
 					
-					token = token+predicate;
+					tokenString = tokenString+predicateString;
 					if (j != predicates.length-1){
-						token =  token+"|";
+						tokenString =  tokenString+"|";
 					}
 				}
 
-				classMap.add(token);
+				classMap.add(tokenString);
 			}
 			
 		}
@@ -299,12 +299,7 @@ public class CNFConverter {
 					}
 					nextTokens.add(string.substring(i+1,leftIndex));
 				}
-				
-				
-				
-				
-				
-				
+
 				String rightString = null;
 				String leftString = null;
 				if (rightIndex == -1){
@@ -317,17 +312,13 @@ public class CNFConverter {
 				} else {
 					leftString = string.substring(leftIndex);
 				}
-				
-				/*System.out.println(string);
-				System.out.println("Left tokens "+previousTokens);
-				
-				System.out.println("Right tokens " + nextTokens);*/
+
 				String distribution = "";
 				for ( int j = 0; j < previousTokens.size(); j++){
 					String previous =  previousTokens.get(j);
 					for ( int k = 0; k < nextTokens.size(); k++){
 						String token = previous+"|"+nextTokens.get(k);
-						distribution = distribution+token+"&";
+						distribution = distribution + token + "&";
 						if (j == previousTokens.size()-1){
 							if (k == nextTokens.size()-1)
 								distribution = distribution.substring(0, distribution.length()-1);
@@ -335,14 +326,8 @@ public class CNFConverter {
 					}
 				}
 				distribution = distribution + "";
-				//System.out.println("d "+distribution+" \tr "+rightString+" \tl "+leftString);
-
 				string = rightString+distribution+leftString;
-				//System.out.println("STRING: "+string);
 				string = standardiseParanthesis(string);
-				//i = i+1;
-				
-				//System.out.println("ONGOING: "+string);
 				
 			}
 		}
@@ -403,8 +388,6 @@ public class CNFConverter {
 		int closingIndex = -1;
 		for ( int i = 0; i < string.length(); i++){
 			if (string.charAt(i) == '('){
-				//System.out.println(string+" "+i+" "+string.length());
-				//boolean closes = false;
 				int openCount = 1;
 				int  j = i+1;
 				boolean isUseless = true;
@@ -509,9 +492,9 @@ public class CNFConverter {
 		string = string.substring(rightIndex,leftIndex);
 		
 		
-		String rightToken = "~"+string.substring(0, center-rightIndex).trim();
-		String leftToken = string.substring(center-rightIndex+2);
-		string = rightToken+"|"+leftToken;
+		String rightTokenString = "~"+string.substring(0, center-rightIndex).trim();
+		String leftTokenString = string.substring(center-rightIndex+2);
+		string = rightTokenString+"|"+leftTokenString;
 		
 		builder.append(string);
 		builder.append(temp.substring(leftIndex));
@@ -532,20 +515,20 @@ public class CNFConverter {
 					}
 					j++;
 				}
-				String predicate = string.substring(i,openIndex);
-				String operand = string.substring(i,j+1);
+				String predicateString = string.substring(i,openIndex);
+				String operandString = string.substring(i,j+1);
 				String additions = "";
-				while (map.get(predicate)!= null){
-					if (map.get(predicate).equals(operand)){
+				while (map.get(predicateString)!= null){
+					if (map.get(predicateString).equals(operandString)){
 						break;
 					} else {
-						predicate = predicate+"@";
-						additions = additions+"@";
+						predicateString = predicateString+"%";
+						additions = additions+"%";
 					}
 				}
 				
-				map.put(predicate,operand);
-				map.put("~"+predicate, "~"+operand);
+				map.put(predicateString,operandString);
+				map.put("~"+predicateString, "~"+operandString);
 
 				string = string.substring(0, openIndex)+additions+string.substring(j+1);
 				i = openIndex;
@@ -555,7 +538,7 @@ public class CNFConverter {
 		return string;
 	}
 	
-	private String standardizeVariables(String string, int index) {
+	private String variableStandardization(String string, int index) {
 		int rightIndex = -1;
 		boolean isVariable =  false;
 		for ( int i = 0; i < string.length(); i++){
