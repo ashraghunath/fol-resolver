@@ -1,0 +1,10 @@
+1
+(Plays(ALEX,PIANO))
+7
+(FORALL x (Instrument(x) => Plays(ALEX)))
+(Instrument(GUITAR) AND Instrument(PIANO))
+(FORALL x (FORALL y (Plays(x,y) AND NOT Broken(x) => Instrument(y))))
+(Plays(MARK,GUITAR) AND Alive(MARK))
+(FORALL x (Plays(MARK,x) => Plays(SARAH,x)))
+(FORALL x (NOT Broken(x) => Alive(x)))
+(FORALL x (Alive(x) => NOT Broken(x)))

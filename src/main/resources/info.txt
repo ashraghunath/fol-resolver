@@ -1,0 +1,3 @@
+Predicates : [Sells, Criminal, Missile, American, Enemy, Owns, Weapon, Hostile]
+Variables : [x, y, z]
+Constants : [AMERICA, NONO, WEST]

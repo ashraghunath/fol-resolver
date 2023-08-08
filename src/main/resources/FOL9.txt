@@ -1,0 +1,10 @@
+1
+(Likes(LISA,DOG))
+7
+(FORALL x (Pet(x) => Likes(LISA)))
+(Pet(CAT) AND Pet(DOG))
+(FORALL x (FORALL y (Feeds(x,y) AND NOT Hates(x) => Pet(y))))
+(Feeds(MIKE,CAT) AND Alive(MIKE))
+(FORALL x (Feeds(MIKE,x) => Feeds(JEN,x)))
+(FORALL x (NOT Hates(x) => Alive(x)))
+(FORALL x (Alive(x) => NOT Hates(x)))

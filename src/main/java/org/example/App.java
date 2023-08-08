@@ -17,6 +17,11 @@ import java.util.regex.Pattern;
 
 public class App
 {
+
+    static String filepath ="src/main/resources/FOL6.txt";
+
+    static String infoPath ="src/main/resources/info.txt";
+
     public static Set<String> predefined = new HashSet<String>(Arrays.asList("AND", "OR", "EXISTS", "FORALL", "NOT"));
     public static Set<String> sentences = new HashSet<>();
     public static Set<String> querySentences = new HashSet<>();
@@ -26,7 +31,6 @@ public class App
     static int folQueriesCount, folStatementsCount;
     static String[] folInputqueries = null, folInputstatements = null;
 
-    static String filepath ="src/main/resources/FOL1.txt";
     public static void main( String[] args )
     {
 
@@ -39,7 +43,10 @@ public class App
         Set<String> predicates = extractPredicates();
         Set<String> variables = extractVariables();
         Set<String> constants = extractConstants();
-        String temp;
+
+        predicates.removeAll(constants);
+        writeToFile(infoPath,predicates,variables,constants);
+
         predicates.removeAll(constants);
 
         removeCapitals(constants);
@@ -248,5 +255,17 @@ public class App
             }
         }
         return constants;
+    }
+
+    private static void writeToFile(String fileName, Set<String> predicates, Set<String> variables, Set<String> constants) {
+        try {
+            FileWriter writer = new FileWriter(fileName, false);
+            writer.write( "Predicates : " + predicates + "\n");
+            writer.write( "Variables : " + variables + "\n");
+            writer.write( "Constants : " + constants + "\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

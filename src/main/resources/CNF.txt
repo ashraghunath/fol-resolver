@@ -1,11 +1,11 @@
-2
-~Child(John) | Pumpkin(SC0)
-~Child(John) | Carve(John,SC0)
-7
-Pumpkin(SC1)
-Buy(John,SC1)
-~Child(x) | ~Candy(y) | Loves(x,y)
-~Pumpkin(y) | ~Eat(x,y) | Fanatic(x)
-Candy(Lifesavers)
-~Pumpkin(y) | ~Buy(x,y) | Carve(x,y) | Eat(x,y)
-~Candy(y) | ~Loves(x,y) | ~Fanatic(x)
+1
+Criminal(West)
+8
+Owns(Nono,SC0)
+Missile(SC0)
+~Enemy(x,America) | Hostile(x)
+~Missile(x) | Weapon(x)
+Enemy(Nono,America)
+~Missile(x) | ~Owns(Nono,x) | Sells(West,x,Nono)
+American(West)
+~American(x) | ~Weapon(y) | ~Sells(x,y,z) | ~Hostile(z) | Criminal(x)
