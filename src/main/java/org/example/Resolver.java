@@ -42,15 +42,15 @@ public class Resolver {
 	}
 	
 	/*
-	 * Unify checks all the clause in the KB predicate map wherever a negation of a token of aClause is present
-	 * and unifies aClause with all of those clauses wherever possible.
-	 * 
-	 * Returns true if an empty clause if found
-	 * Returns false if all possible unification are done for aClause
+	 * Unify scans through the predicate map in the knowledge base (KB) to identify any clauses containing the negation
+	 * of a specific token from aClause. It then attempts to unify aClause with each of these identified clauses as much as possible.
+	 * If an empty clause is encountered during this process, the function returns true.
+	 * If all potential unification have been completed for aClause without finding an empty clause, the function returns false.
 	 * */
 	private boolean unify(String aClause) {
 		String[] aTokens = aClause.split("\\|");
-		
+
+		// if length is 1 then check in the clause list only
 		if(aTokens.length == 1){
 			String check = negateQuery(aTokens[0]);
 			if (classMap.contains(check)){
@@ -86,7 +86,7 @@ public class Resolver {
 			}
 			
 			
-			// Looping through all the clauses that contain ~aToken
+			// Looping through all list of clauses that contain ~aToken
 			if (clauseList != null){				
 				for ( int  j = 0; j < clauseList.size(); j++){
 					String bclause = clauseList.get(j);
@@ -106,7 +106,8 @@ public class Resolver {
 						bToken =  bTokens[m];
 						String[] bArguments = null;
 						String bPredicate = getPredicate(bToken);
-						
+
+						// if predicates are equal then unification possible
 						if (bPredicate.equals(aPredicate)){
 							// Found ~aToken in bclause
 							// Main part of Unification begins
@@ -128,18 +129,16 @@ public class Resolver {
 										mayResolve = false;
 										break;
 									} else if (isAConstant(aArguments[k])){
-										// This will unify, unless something bad happens in the
-										// later arguments
+										// This will unify, unless something bad happens in the later arguments
 										willResolve = true;
 										argMap.put(bArguments[k], aArguments[k]);
 									} else if (isAConstant(bArguments[k])){
-										// This will unify, unless something bad happens in the later
-										// arguments
+										// This will unify, unless something bad happens in the later arguments
 										willResolve = true;
 										argMap.put(aArguments[k], bArguments[k]);
 									} else {
+										// both are variables, so replace one of them to another one
 										argMap.put(aArguments[k], bArguments[k]);
-										// TODO : SERIOUSLY RECONSIDER THISSSSS!
 										if (bTokens.length == 1 || aTokens.length == 1)
 											willResolve = true;
 									}
@@ -158,7 +157,8 @@ public class Resolver {
 							}
 						}
 					}
-					
+
+					// unification is possible
 					if (willResolve){
 						//System.out.println("UNIFY"+" "+aClause+" "+bclause);
 						String newA = new String(aClause);
@@ -168,12 +168,13 @@ public class Resolver {
 						String[] newBTokens = newB.split("\\|");
 						newA = "";
 
-						//System.out.println("NEWB : "+bToken);
+						// make the new A token (formatting)
 						for ( int m = 0; m < newATokens.length; m++){
 							String newToken = newATokens[m];
 							if (!newToken.equals(negateQuery(aToken))){
 								String[] newArgs = getArguments(newToken);
 								newToken = getPredicate(newToken)+"(";
+								// replacement of all the unification
 								for ( int n = 0; n < newArgs.length; n++){
 									if (argMap.get(newArgs[n]) != null){
 										newToken = newToken+argMap.get(newArgs[n]);
@@ -190,12 +191,12 @@ public class Resolver {
 								}
 							}
 						}
-						
-						
+
+						// make the new B token (formatting)
 						newB = "";
 						for ( int m = 0; m < newBTokens.length; m++){
 							String newToken = newBTokens[m];
-							//System.out.println(newToken+" "+bToken);
+							// replacement of all the unification
 							if (!newToken.equals(bToken)){
 								String[] newArgs = getArguments(newToken);
 								newToken = getPredicate(newToken)+"(";
@@ -215,7 +216,8 @@ public class Resolver {
 								}
 							}
 						}
-						
+
+						// make the new clause which comes once positive and negative literal clauses are in or operation
 						String newString = null;
 						if (newA.isEmpty() && newB.isEmpty()){
 							return true;
@@ -242,18 +244,13 @@ public class Resolver {
 						String[] args = newString.split("\\|");
 						HashMap<String,Boolean> argsMap =  new HashMap<String,Boolean>();
 						for ( int m = 0; m < args.length; m++){
-							//if (argsMap.get(negateQuery(args[m])) == null){
-								argsMap.put(args[m], true);
-								//System.out.println("Arg map : "+args[m]+" "+argMap.size());
-							//} 
-							
+									argsMap.put(args[m], true);
 						}
 						newString = "";
 						Set<String> keys = argsMap.keySet();
 						if (!keys.isEmpty()){
 							for ( String key : keys){
 									newString = newString+key+"|";
-									//System.out.println("Arg SET : "+newString);
 							}
 							newString = newString.substring(0, newString.length()-1);
 							if (newString.isEmpty()){
@@ -263,20 +260,26 @@ public class Resolver {
 						if (newString.isEmpty() || newString.equals("")){
 							continue;
 						}
-						
+
+						// add the new string to the classmap
 						if(classMap.add(newString)){
 							
 							String[] tokens = newString.split("\\|");
-							
+
+							//if the length of the new string is 1 and if the negated literal is present in the clause then it is nullified
+							// and empty clause is achieved
 							if (tokens.length == 1){
 								if (classMap.contains(negateQuery(newString))){
 									return true;
 								}
 							}
-							
+
+							// if not then add it to the list of class
 							classList.add(newString);
 						
-						
+
+							// update the predicate map
+							// for each token in the new string, add the list of clauses to the predicate map containing specific predicate
 							String[] tokenArray = newString.split("\\|");
 							for ( int m = 0; m < tokenArray.length; m++){
 								if (predicateMap.get(getPredicate(tokenArray[m])) != null){
@@ -288,7 +291,6 @@ public class Resolver {
 								}
 							}
 						} else {
-							//System.out.println("ALREADY IN KB: "+newString);
 						}
 					}
 				}
@@ -314,7 +316,10 @@ public class Resolver {
 		String[] split = query.split("\\(");
 		return split[0];
 	}
-	
+
+	/*
+	Negate the query
+	 */
 	private static String negateQuery(String predicate){
 		if (predicate.charAt(0) == '('){
 			predicate = predicate.substring(1, predicate.length()-1);
