@@ -4,12 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class Solution {
+public class EngineComponent {
 
 	private static String cnfFilePath = "src/main/resources/CNF.txt";
 
 	public static void solveCNF() {
-		System.out.println("\nResolution : \n");
+		System.out.println("\n******** Resolution ********  \n");
 		File file =  new File(cnfFilePath);
 
 		int queriesCount, statementsCount;
@@ -30,25 +30,25 @@ public class Solution {
 		}
 		
 		
-		CNFConverter cnfConverter =  new CNFConverter();
-		statements = cnfConverter.convertToCNF(statements);
+		Extractor extractor =  new Extractor();
+		extractor.extract(statements);
 
 		Boolean[] result = new Boolean[queries.length];
 		
 		for ( int i = 0; i < queries.length; i++){
-			HashMap<String,List<String>> predicateMap =  cnfConverter.getPredicateMap();
+			HashMap<String,List<String>> predicateMap =  extractor.getPredicateMap();
 
-			Set<String> classMap = cnfConverter.getClassMap();
+			Set<String> clausemap = extractor.getclausemap();
 			
-			Resolver resolver =  new Resolver( classMap, predicateMap);
+			Resolver resolver =  new Resolver( clausemap, predicateMap);
 			result[i] = resolver.resolution(queries[i]);
 		}
 
 		for ( int i = 0; i < result.length; i++){
 			if (result[i]){
-				System.out.println("Goal is true");
+				System.out.println("\nGoal is true");
 			} else {
-				System.out.println("Goal is false");
+				System.out.println("\nGoal is false");
 			}
 		}
 

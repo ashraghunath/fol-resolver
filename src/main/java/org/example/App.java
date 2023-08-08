@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class App
 {
 
-    static String filepath ="src/main/resources/FOL6.txt";
+    static String filepath ="src/main/resources/FOL10.txt";
 
     static String infoPath ="src/main/resources/info.txt";
 
@@ -80,7 +80,7 @@ public class App
 
         outputCNF("src/main/resources/CNF.txt",cnfQueries,cnf);
 
-        Solution.solveCNF();
+        EngineComponent.solveCNF();
 
 
         long endTime = System.currentTimeMillis();
@@ -114,7 +114,6 @@ public class App
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filepath))) {
 
-//            //TODO convert query and add
             writer.write(""+cnfQueries.size());
             writer.newLine();
             System.out.println(cnfQueries.size());

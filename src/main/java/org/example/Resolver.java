@@ -3,38 +3,38 @@ package org.example;
 import java.util.*;
 
 public class Resolver {
-	private Set<String> classMap ;
-	private List<String> classList;
+	private Set<String> clausemap ;
+	private List<String> clauseList;
 	private Map<String,List<String>> predicateMap;
 	
-	public Resolver(Set<String> classMap, Map<String,List<String>> predicateMap) {
-		this.classMap = classMap;
+	public Resolver(Set<String> clausemap, Map<String,List<String>> predicateMap) {
+		this.clausemap = clausemap;
 		this.predicateMap = predicateMap;
-		classList =  new ArrayList<String>(classMap);
+		clauseList =  new ArrayList<String>(clausemap);
 		
 	}
 	
 	public boolean resolution(String query){
 		String negatedQuery = negateQuery(query);
 		
-		classMap.add(negatedQuery);
-		classList.add(0, negatedQuery);
+		clausemap.add(negatedQuery);
+		clauseList.add(0, negatedQuery);
 		
 		
 		int sizeDiff = -1;
 		while(sizeDiff != 0 ){
-			int size = classList.size();
-			for (int i = 0; i < classList.size()  ; i++){
-				if (classList.size() > 50000){
+			int size = clauseList.size();
+			for (int i = 0; i < clauseList.size()  ; i++){
+				if (clauseList.size() > 50000){
 					return false;
 				}
 
-				String clause = classList.get(i);
+				String clause = clauseList.get(i);
 				if(unify(clause)){
 					return true;
 				}
 			}
-			sizeDiff = classMap.size() - size;
+			sizeDiff = clausemap.size() - size;
 			
 		}
 		
@@ -42,9 +42,9 @@ public class Resolver {
 	}
 	
 	/*
-	 * Unify scans through the predicate map in the knowledge base (KB) to identify any clauses containing the negation
-	 * of a specific token from aClause. It then attempts to unify aClause with each of these identified clauses as much as possible.
-	 * If an empty clause is encountered during this process, the function returns true.
+	 * Here we scan through the predicate map in the KB to detect any clauses containing the negation
+	 * of a specific token from aClause. Then we attempt to unify aClause with each of these identified clauses as much as possible.
+	 * If we get an empty clause, the function returns true.
 	 * If all potential unification have been completed for aClause without finding an empty clause, the function returns false.
 	 * */
 	private boolean unify(String aClause) {
@@ -53,7 +53,7 @@ public class Resolver {
 		// if length is 1 then check in the clause list only
 		if(aTokens.length == 1){
 			String check = negateQuery(aTokens[0]);
-			if (classMap.contains(check)){
+			if (clausemap.contains(check)){
 				return true;
 			}
 		}
@@ -67,29 +67,29 @@ public class Resolver {
 			String aPredicate = getPredicate(aToken);
 			
 			// Getting all clauses which have ~aToken
-			List<String> clauseList = predicateMap.get(aPredicate);
+			List<String> clauseListTemp = predicateMap.get(aPredicate);
 			
-			// If aClause belongs to clauseList, move on to next aToken. 
+			// If aClause belongs to clauseListTemp, move on to next aToken. 
 			// DO NOT UNIFY
-			boolean aBelongsToClauseList = false;
+			boolean aBelongsToclauseListTemp = false;
 			
-			if (clauseList != null){
-				for ( int j = 0; j < clauseList.size(); j++){
-					if(aClause.equals(clauseList.get(j))){
-						aBelongsToClauseList = true;
+			if (clauseListTemp != null){
+				for ( int j = 0; j < clauseListTemp.size(); j++){
+					if(aClause.equals(clauseListTemp.get(j))){
+						aBelongsToclauseListTemp = true;
 					}
 				}
 			}
 		
-			if (aBelongsToClauseList){
+			if (aBelongsToclauseListTemp){
 				continue;
 			}
 			
 			
 			// Looping through all list of clauses that contain ~aToken
-			if (clauseList != null){				
-				for ( int  j = 0; j < clauseList.size(); j++){
-					String bclause = clauseList.get(j);
+			if (clauseListTemp != null){				
+				for ( int  j = 0; j < clauseListTemp.size(); j++){
+					String bclause = clauseListTemp.get(j);
 					
 					
 					
@@ -121,7 +121,6 @@ public class Resolver {
 									else
 										mayResolve = false;
 									argMap.put(bArguments[k], bArguments[k]);
-									continue;
 								} else {
 									if (isAConstant(aArguments[k]) && isAConstant(bArguments[k])){
 										// This token will not unify with aToken
@@ -148,7 +147,6 @@ public class Resolver {
 								break;
 							} else if (mayResolve){
 								if (aTokens.length == 1){
-									//System.out.println("Here "+aToken+" "+bToken);
 									willResolve = true;
 									break;
 								} else {
@@ -160,7 +158,7 @@ public class Resolver {
 
 					// unification is possible
 					if (willResolve){
-						//System.out.println("UNIFY"+" "+aClause+" "+bclause);
+						System.out.println("UNIFY"+" "+aClause+" WITH "+bclause);
 						String newA = new String(aClause);
 						String newB = new String(bclause);
 						
@@ -261,21 +259,21 @@ public class Resolver {
 							continue;
 						}
 
-						// add the new string to the classmap
-						if(classMap.add(newString)){
+						// add the new string to the clausemap
+						if(clausemap.add(newString)){
 							
 							String[] tokens = newString.split("\\|");
 
 							//if the length of the new string is 1 and if the negated literal is present in the clause then it is nullified
 							// and empty clause is achieved
 							if (tokens.length == 1){
-								if (classMap.contains(negateQuery(newString))){
+								if (clausemap.contains(negateQuery(newString))){
 									return true;
 								}
 							}
 
 							// if not then add it to the list of class
-							classList.add(newString);
+							clauseList.add(newString);
 						
 
 							// update the predicate map
